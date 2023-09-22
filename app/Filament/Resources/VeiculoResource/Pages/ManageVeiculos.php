@@ -16,7 +16,8 @@ class ManageVeiculos extends ManageRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('Criar Veículo'),
+                ->label('Criar Veículo')
+                ->modalHeading('Criar Veículo'),
         ];
     }
 

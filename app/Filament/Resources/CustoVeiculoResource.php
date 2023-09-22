@@ -44,14 +44,14 @@ class CustoVeiculoResource extends Resource
                         ->searchable()
                         ->getSearchResultsUsing(function (string $search) {
                             $veiculos = Veiculo::where('modelo', 'like', "%{$search}%")->limit(50)->get();
-                    
+
                             return $veiculos->mapWithKeys(function ($veiculos) {
                                 return [$veiculos->getKey() => static::getCleanOptionString($veiculos)];
                                 })->toArray();
                         })
                     ->getOptionLabelUsing(function ($value): string {
                         $veiculo = Veiculo::find($value);
-                    
+
                         return static::getCleanOptionString($veiculo);
                     }),
                 Forms\Components\TextInput::make('km_atual')
@@ -73,8 +73,12 @@ class CustoVeiculoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('fornecedor.nome'),
+                Tables\Columns\TextColumn::make('fornecedor.nome')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('veiculo.modelo')
+                    ->sortable()
+                    ->searchable()
                     ->label('Veículo'),
                 Tables\Columns\TextColumn::make('veiculo.placa')
                     ->label('Placa'),
@@ -83,6 +87,7 @@ class CustoVeiculoResource extends Resource
                 Tables\Columns\TextColumn::make('data')
                     ->date(),
                 Tables\Columns\TextColumn::make('descricao')
+                    ->searchable()
                     ->label('Descrição'),
                 Tables\Columns\TextColumn::make('valor')
                     ->money('BRL')
@@ -94,9 +99,9 @@ class CustoVeiculoResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('veiculo')->relationship('veiculo', 'placa'),
-               
+
                 SelectFilter::make('fornecedor')->relationship('fornecedor', 'nome'),
-              
+
                 Tables\Filters\Filter::make('data')
                     ->form([
                         Forms\Components\DatePicker::make('data_de')
@@ -120,24 +125,24 @@ class CustoVeiculoResource extends Resource
                         $veiculo = Veiculo::find($data['veiculo_id']);
                         $veiculo->km_atual = $data['km_atual'];
                         $veiculo->save();
-                    }), 
-                    
+                    }),
+
                 Tables\Actions\DeleteAction::make(),
-                 
-    
+
+
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ManageCustoVeiculos::route('/'),
         ];
-    } 
-    
+    }
+
     public static function getCleanOptionString(Veiculo $veiculo): string
     {
         return Purify::clean(
@@ -151,13 +156,13 @@ class CustoVeiculoResource extends Resource
     public function save(): void
     {
         // ...
- 
-        Notification::make() 
+
+        Notification::make()
             ->title('Teste')
             ->success()
-            ->send(); 
-    } 
+            ->send();
+    }
 
-    
+
 
 }

@@ -33,7 +33,7 @@ class LocacaoResource extends Resource
 
     protected static ?string $navigationLabel = 'Locações';
 
-   
+
     public static function form(Form $form): Form
     {
         return $form
@@ -51,11 +51,11 @@ class LocacaoResource extends Resource
                                         $cliente = Cliente::find($state);
                                         Notification::make()
                                             ->title('ATENÇÃO')
-                                            ->body('A validade da CNH do cliente selecionado: '. Carbon::parse($cliente->validade_cnh)->format('d/m/Y') ) 
+                                            ->body('A validade da CNH do cliente selecionado: '. Carbon::parse($cliente->validade_cnh)->format('d/m/Y') )
                                             ->warning()
-                                            ->persistent() 
+                                            ->persistent()
                                             ->send();
-                                                       
+
                                     }),
                                 Forms\Components\Select::make('veiculo_id')
                                     ->label('Veículo')
@@ -64,15 +64,15 @@ class LocacaoResource extends Resource
                                     ->allowHtml()
                                     ->searchable()
                                     ->getSearchResultsUsing(function (string $search) {
-                                        $veiculos = Veiculo::where('modelo', 'like', "%{$search}%")->limit(50)->get();
-                                 
+                                        $veiculos = Veiculo::where('modelo', 'like', "%{$search}%")->where('status','=',true)->limit(50)->get();
+
                                         return $veiculos->mapWithKeys(function ($veiculos) {
                                               return [$veiculos->getKey() => static::getCleanOptionString($veiculos)];
                                              })->toArray();
                                     })
                                    ->getOptionLabelUsing(function ($value): string {
                                        $veiculo = Veiculo::find($value);
-                                 
+
                                        return static::getCleanOptionString($veiculo);
                                    }),
                                 Forms\Components\DatePicker::make('data_saida')
@@ -91,10 +91,10 @@ class LocacaoResource extends Resource
                                         $dt_retorno = Carbon::parse($get('data_retorno'));
                                         $qtd_dias = $dt_retorno->diffInDays($dt_saida);
                                         $set('qtd_diarias', $qtd_dias);
-                                      
+
                                         $carro = Veiculo::find($get('veiculo_id'));
                                         $set('valor_total', ($carro->valor_diaria * $qtd_dias));
-                                 
+
                                     })
                                     ->required(),
                                 Forms\Components\TimePicker::make('hora_retorno')
@@ -105,10 +105,10 @@ class LocacaoResource extends Resource
                                     ->required(),
                                 Forms\Components\TextInput::make('km_retorno')
                                     ->label('Km Retorno'),
-                                    
+
                             ]),
                         Fieldset::make('Valores')
-                            ->schema([    
+                            ->schema([
 
                                 Forms\Components\TextInput::make('qtd_diarias')
                                     ->label('Qtd Diárias')
@@ -120,23 +120,23 @@ class LocacaoResource extends Resource
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set, Closure $get,) {
                                          $set('valor_total_desconto', ((float)$get('valor_total') - (float)$get('valor_desconto')));
-                                    
+
                                      }),
-                                    
+
                                 Forms\Components\TextInput::make('valor_total')
                                     ->label('Valor Total')
                                     ->disabled()
-                                    ->required(),    
+                                    ->required(),
                                 Forms\Components\TextInput::make('valor_total_desconto')
                                     ->label('Valor Total com Desconto')
                                     ->disabled()
-                                    ->required(),    
+                                    ->required(),
                                 Forms\Components\Textarea::make('obs')
                                     ->label('Observações'),
                                 Forms\Components\Toggle::make('status')
                                     ->label('Finalizar Locação'),
-                                    
-                            ]),        
+
+                            ]),
                     ]),
             ]);
     }
@@ -171,7 +171,7 @@ class LocacaoResource extends Resource
                 Tables\Columns\TextColumn::make('Km_Percorrido')
                     ->label('Km Percorrido')
                     ->getStateUsing(function (Locacao $record): int {
-                        
+
                         return  ($record->km_retorno - $record->km_saida);
 
                     }),
@@ -212,28 +212,28 @@ class LocacaoResource extends Resource
                                 fn($query) => $query->whereDate('data_saida', '>=', $data['data_saida_de']))
                             ->when($data['data_retorno_ate'],
                                 fn($query) => $query->whereDate('data_retorno', '<=', $data['data_retorno_ate']));
-                    })
+                    }) 
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Imprimir')
                 ->url(fn (Locacao $record): string => route('imprimirLocacao', $record))
                 ->openUrlInNewTab(),
-                        
+
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
-                
+
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             OcorrenciaLocacaoRelationManager::class
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -241,10 +241,10 @@ class LocacaoResource extends Resource
             'create' => Pages\CreateLocacao::route('/create'),
             'edit' => Pages\EditLocacao::route('/{record}/edit'),
         ];
-    }   
+    }
 
     // Método para exibir o campo Modelo de placa do veículo
-    
+
     public static function getCleanOptionString(Veiculo $veiculo): string
     {
         return Purify::clean(

@@ -48,7 +48,7 @@ class VeiculoResource extends Resource
                         Forms\Components\TextInput::make('valor_diaria'),
                         Forms\Components\TextInput::make('km_atual')
                             ->label('Km Atual'),
-                    ]), 
+                    ]),
 
                     Fieldset::make('Manutenção')
                     ->schema([
@@ -74,10 +74,10 @@ class VeiculoResource extends Resource
                             ->label('Data da Compra do Veículo'),
                         Forms\Components\Toggle::make('status')
                             ->default(true)
-                            ->label('Ativar / Desativar'),
+                            ->label('Ativo'),
                     ]),
 
-                       
+
             ]);
     }
 
@@ -97,42 +97,42 @@ class VeiculoResource extends Resource
                 Tables\Columns\TextColumn::make('km_atual')
                  ->label('Km Atual'),
               /*  ->getStateUsing(function (Veiculo $record): void {
-                  
+
                   //  dd($record->km_atual);
-                   
+
                     if($record->km_atual >= $record->aviso_troca_oleo){
                         Notification::make()
                         ->title('ATENÇÃO: Veículos com troca de óleo próxima')
-                        ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa) 
+                        ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa)
                         ->warning()
-                        ->persistent() 
+                        ->persistent()
                         ->send();
                         }
 
                         if($record->km_atual >= $record->aviso_troca_filtro){
                             Notification::make()
                             ->title('ATENÇÃO: Veículos com troca do filtro próxima')
-                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa) 
+                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa)
                             ->warning()
-                            ->persistent() 
+                            ->persistent()
                             ->send();
                         }
-            
+
                         if($record->km_atual >= $record->aviso_troca_correia){
                             Notification::make()
                             ->title('ATENÇÃO: Veículos com troca da correia próxima')
-                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa) 
+                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa)
                             ->warning()
-                            ->persistent() 
+                            ->persistent()
                             ->send();
                         }
-            
+
                         if($record->km_atual >= $record->aviso_troca_pastilha){
                             Notification::make()
                             ->title('ATENÇÃO: Veículos com troca da pastilha próxima')
-                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa) 
+                            ->body('Veiculo: '.$record->modelo.' Placa: '.$record->placa)
                             ->warning()
-                            ->persistent() 
+                            ->persistent()
                             ->send();
                         }
                     }
@@ -142,6 +142,7 @@ class VeiculoResource extends Resource
                    ->label('Valor Diária')
                   ->money('BRL'),
                 Tables\Columns\IconColumn::make('status')
+                    ->label('Ativo')
                     ->sortable()
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -161,13 +162,13 @@ class VeiculoResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-    
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ManageVeiculos::route('/'),
         ];
-    } 
-    
-    
+    }
+
+
 }

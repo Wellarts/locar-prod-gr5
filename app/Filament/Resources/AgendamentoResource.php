@@ -53,18 +53,16 @@ class AgendamentoResource extends Resource
                                 ->allowHtml()
                                 ->searchable()
                                 ->getSearchResultsUsing(function (string $search) {
-                                    $veiculos = Veiculo::where('modelo', 'like', "%{$search}%")->limit(50)->get();
-
+                                    $veiculos = Veiculo::where('modelo', 'like', "%{$search}%")->where('status','=',true)->limit(50)->get();
                                     return $veiculos->mapWithKeys(function ($veiculos) {
                                           return [$veiculos->getKey() => static::getCleanOptionString($veiculos)];
                                          })->toArray();
                                 })
                                ->getOptionLabelUsing(function ($value): string {
                                    $veiculo = Veiculo::find($value);
-
                                    return static::getCleanOptionString($veiculo);
                                }),
-                              //  ->options(Veiculo::all()->pluck('modelo', 'id')->toArray()),
+                             //  ->options(Veiculo::all()->pluck('modelo', 'id')->toArray()),
                             Forms\Components\DatePicker::make('data_saida')
                                 ->displayFormat('d/m/Y')
                                 ->label('Data Saída')
@@ -194,7 +192,7 @@ class AgendamentoResource extends Resource
                                 fn($query) => $query->whereDate('data_saida', '>=', $data['data_saida_de']))
                             ->when($data['data_retorno_ate'],
                                 fn($query) => $query->whereDate('data_retorno', '<=', $data['data_retorno_ate']));
-                    })
+                    }) 
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
